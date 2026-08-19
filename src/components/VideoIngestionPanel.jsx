@@ -41,7 +41,8 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
       selectedFiles.forEach(file => formData.append('videos', file));
 
       try {
-        const response = await fetch('http://localhost:5000/upload', {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+        const response = await fetch(`${backendUrl}/upload`, {
           method: 'POST',
           body: formData
         });
