@@ -32,9 +32,19 @@ def upload_files():
 
     return jsonify(result)
 
+@app.route('/', methods=['GET'])
+@app.route('/health', methods=['GET'])
+def health():
+    return jsonify({
+        'status': 'ONLINE',
+        'service': 'IntelliCorridor EdgeAI Vision & GA API',
+        'version': '2.4.0'
+    })
+
 if __name__ == '__main__':
     base_dir = os.path.dirname(os.path.abspath(__file__))
     uploads_dir = os.path.join(base_dir, 'uploads')
     os.makedirs(uploads_dir, exist_ok=True)
-    print("[FLASK BACKEND] Starting on http://127.0.0.1:5000 ...")
-    app.run(host='127.0.0.1', port=5000, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    print(f"[FLASK BACKEND] Starting on port {port} ...")
+    app.run(host='0.0.0.0', port=port, debug=False)
