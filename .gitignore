@@ -1,0 +1,28 @@
+# Node & Build
+node_modules
+dist
+dist-ssr
+*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# Large Weights & Temporary Uploads
+backend/uploads/
+*.mp4
+!public/videos/*.mp4
+!backend/sample_videos/*.mp4
+
+# OS
+.DS_Store
+Thumbs.db
