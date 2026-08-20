@@ -74,36 +74,36 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
     setIsOptimizing(true);
     let success = false;
 
-    if (selectedFiles.length >= 1) {
-      const formData = new FormData();
+    const formData = new FormData();
+    if (selectedFiles && selectedFiles.length > 0) {
       selectedFiles.forEach(file => formData.append('videos', file));
+    }
 
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+    try {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout for scanning
 
-        const response = await fetch(`${backendUrl}/upload`, {
-          method: 'POST',
-          body: formData,
-          signal: controller.signal
+      const response = await fetch(`${backendUrl}/upload`, {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
+      if (response.ok) {
+        const data = await response.json();
+        setGaResult({
+          north: data.north || 28,
+          south: data.south || 24,
+          west: data.west || 22,
+          east: data.east || 18,
+          totalDelay: 48.2
         });
-        clearTimeout(timeoutId);
-
-        if (response.ok) {
-          const data = await response.json();
-          setGaResult({
-            north: data.north || 28,
-            south: data.south || 24,
-            west: data.west || 22,
-            east: data.east || 18,
-            totalDelay: 48.2
-          });
-          success = true;
-        }
-      } catch (err) {
-        console.warn('Flask upload response timeout, switching to instant GA solver:', err);
+        success = true;
       }
+    } catch (err) {
+      console.warn('Flask upload error or timeout, switching to fast local solver:', err);
     }
 
     if (!success) {

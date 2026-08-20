@@ -11,23 +11,37 @@ CORS(app)
 @app.route('/upload', methods=['POST'])
 def upload_files():
     files = request.files.getlist('videos')
-    if not files:
-        return jsonify({'error': 'No videos provided'}), 400
-
-    # If fewer than 4 files uploaded, recycle them to cover all 4 junction approaches
-    original_files = list(files)
-    while len(files) < 4:
-        files.append(original_files[len(files) % len(original_files)])
-
+    video_paths = []
     base_dir = os.path.dirname(os.path.abspath(__file__))
     uploads_dir = os.path.join(base_dir, 'uploads')
     os.makedirs(uploads_dir, exist_ok=True)
 
-    video_paths = []
-    for i, file in enumerate(files):
-        video_path = os.path.join(uploads_dir, f'video_{i}.mp4')
-        file.save(video_path)
-        video_paths.append(video_path)
+    if not files or len(files) == 0 or (len(files) == 1 and files[0].filename == ''):
+        sample_dir = os.path.join(base_dir, 'sample_videos')
+        video_paths = [
+            os.path.join(sample_dir, 'traffic_road1.mp4'),
+            os.path.join(sample_dir, 'traffic_road2.mp4'),
+            os.path.join(sample_dir, 'traffic_road3.mp4'),
+            os.path.join(sample_dir, 'traffic_road4.mp4')
+        ]
+    else:
+        original_files = [f for f in files if f.filename != '']
+        if not original_files:
+            sample_dir = os.path.join(base_dir, 'sample_videos')
+            video_paths = [
+                os.path.join(sample_dir, 'traffic_road1.mp4'),
+                os.path.join(sample_dir, 'traffic_road2.mp4'),
+                os.path.join(sample_dir, 'traffic_road3.mp4'),
+                os.path.join(sample_dir, 'traffic_road4.mp4')
+            ]
+        else:
+            files_to_save = list(original_files)
+            while len(files_to_save) < 4:
+                files_to_save.append(original_files[len(files_to_save) % len(original_files)])
+            for i, file in enumerate(files_to_save):
+                video_path = os.path.join(uploads_dir, f'video_{i}.mp4')
+                file.save(video_path)
+                video_paths.append(video_path)
 
     # Process approach videos sequentially to avoid Windows C++ OpenCV GUI thread deadlock
     num_cars_list = []
