@@ -30,16 +30,37 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
     '/videos/traffic_road4.mp4'
   ];
 
+  const [previewUrls, setPreviewUrls] = useState([]);
+
+  // Safely manage blob object URLs for uploaded files
+  useEffect(() => {
+    if (selectedFiles && selectedFiles.length > 0) {
+      const urls = selectedFiles.map(file => {
+        try {
+          return URL.createObjectURL(file);
+        } catch (e) {
+          return null;
+        }
+      });
+      setPreviewUrls(urls);
+      return () => {
+        urls.forEach(url => {
+          if (url) {
+            try { URL.revokeObjectURL(url); } catch (e) {}
+          }
+        });
+      };
+    } else {
+      setPreviewUrls([]);
+    }
+  }, [selectedFiles]);
+
   // Dynamic preview video source (custom uploaded file or default feed)
-  const currentVideoSrc = useMemo(() => {
-    if (selectedFiles.length > activeVideoTab && selectedFiles[activeVideoTab]) {
-      return URL.createObjectURL(selectedFiles[activeVideoTab]);
-    }
-    if (selectedFiles.length > 0 && selectedFiles[0]) {
-      return URL.createObjectURL(selectedFiles[0]);
-    }
-    return defaultVideoSources[activeVideoTab] || defaultVideoSources[0];
-  }, [selectedFiles, activeVideoTab]);
+  const currentVideoSrc = (previewUrls.length > activeVideoTab && previewUrls[activeVideoTab])
+    ? previewUrls[activeVideoTab]
+    : (previewUrls.length > 0 && previewUrls[0])
+    ? previewUrls[0]
+    : (defaultVideoSources[activeVideoTab] || defaultVideoSources[0]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
