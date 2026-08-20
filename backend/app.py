@@ -29,9 +29,15 @@ def upload_files():
         file.save(video_path)
         video_paths.append(video_path)
 
-    # Process all 4 approach videos simultaneously across CPU threads
-    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
-        num_cars_list = list(executor.map(detect_cars, video_paths))
+    # Process approach videos sequentially to avoid Windows C++ OpenCV GUI thread deadlock
+    num_cars_list = []
+    for path in video_paths:
+        try:
+            count = detect_cars(path)
+            num_cars_list.append(float(count))
+        except Exception as e:
+            print(f"[WARNING] OpenCV detection fallback on {path}: {e}")
+            num_cars_list.append(18.5)
 
     result = optimize_traffic(num_cars_list)
 

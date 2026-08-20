@@ -72,16 +72,24 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
 
   const handleRunGeneticOptimization = async () => {
     setIsOptimizing(true);
+    let success = false;
+
     if (selectedFiles.length >= 1) {
       const formData = new FormData();
       selectedFiles.forEach(file => formData.append('videos', file));
 
       try {
         const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+
         const response = await fetch(`${backendUrl}/upload`, {
           method: 'POST',
-          body: formData
+          body: formData,
+          signal: controller.signal
         });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data = await response.json();
           setGaResult({
@@ -91,21 +99,20 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             east: data.east || 18,
             totalDelay: 48.2
           });
-          setIsOptimizing(false);
-          return;
+          success = true;
         }
       } catch (err) {
-        console.warn('Flask upload error, running local solver:', err);
+        console.warn('Flask upload response timeout, switching to instant GA solver:', err);
       }
     }
 
-    // Corridor vehicle counts fallback
-    setTimeout(() => {
+    if (!success) {
       const carCounts = intersections.map(int => Math.round(int.vehicleCount * 0.4));
       const result = runGeneticOptimizer(carCounts);
       setGaResult(result);
-      setIsOptimizing(false);
-    }, 600);
+    }
+
+    setIsOptimizing(false);
   };
 
   return (
