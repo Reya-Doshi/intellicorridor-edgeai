@@ -56,7 +56,7 @@ export function Header({
           </div>
         </div>
 
-        <div className="header-telemetry">
+        <div className="header-telemetry flex items-center gap-3 px-3 py-1.5 bg-slate-950/60 border border-slate-800/80 rounded-xl">
           {/* Edge AI Status */}
           <div className={`status-pill ${isEmergencyActive ? 'danger' : simState.congestionSpiked ? 'warning' : ''}`}>
             <span className="pulse-dot"></span>
@@ -77,39 +77,42 @@ export function Header({
             <span>YOLOv9 + EDGE-AI v2.4</span>
           </div>
 
-          {/* Theme Toggle (Light / Dark Mode) */}
-          <button 
-            id="btn-toggle-theme"
-            className="btn btn-ghost !py-1.5 !px-3 flex items-center gap-1.5 text-xs font-mono select-none"
-            onClick={() => setTheme && setTheme(theme === 'light' ? 'dark' : 'light')}
-            title={theme === 'light' ? 'Switch to Dark Control Room Mode' : 'Switch to Clean Light Mode'}
-          >
-            {theme === 'light' ? (
-              <>
-                <Moon className="w-3.5 h-3.5 text-slate-700" />
-                <span className="font-semibold text-slate-800">Dark Mode</span>
-              </>
-            ) : (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-400" />
-                <span className="font-semibold text-amber-300">Light Mode</span>
-              </>
-            )}
-          </button>
+          {/* Top-Right Utilities Row (Theme & Sound) */}
+          <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
+            {/* Theme Toggle (Light / Dark Mode) */}
+            <button 
+              id="btn-toggle-theme"
+              className="btn btn-ghost !py-1.5 !px-3 h-9 flex items-center gap-1.5 text-xs font-mono select-none"
+              onClick={() => setTheme && setTheme(theme === 'light' ? 'dark' : 'light')}
+              title={theme === 'light' ? 'Switch to Dark Control Room Mode' : 'Switch to Clean Light Mode'}
+            >
+              {theme === 'light' ? (
+                <>
+                  <Moon className="w-3.5 h-3.5 text-slate-700" />
+                  <span className="font-semibold text-slate-800">Dark Mode</span>
+                </>
+              ) : (
+                <>
+                  <Sun className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="font-semibold text-amber-300">Light Mode</span>
+                </>
+              )}
+            </button>
 
-          {/* Sound Toggle */}
-          <button 
-            className="btn btn-ghost !p-2"
-            onClick={() => setSoundEnabled(!soundEnabled)}
-            title={soundEnabled ? 'Mute Control Room Audio' : 'Unmute Control Room Audio'}
-          >
-            {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
-          </button>
+            {/* Sound Toggle */}
+            <button 
+              className="btn btn-ghost !p-2 h-9 w-9 flex items-center justify-center"
+              onClick={() => setSoundEnabled(!soundEnabled)}
+              title={soundEnabled ? 'Mute Control Room Audio' : 'Unmute Control Room Audio'}
+            >
+              {soundEnabled ? <Volume2 className="w-4 h-4 text-cyan-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Interactive Action Controls Bar */}
-      <div className="action-bar">
+      {/* Interactive Action Controls Bar (Uniform Heights & Responsive Wrap) */}
+      <div className="action-bar flex flex-wrap items-center gap-2 sm:gap-2.5 pt-3 border-t border-slate-800/80">
         <span className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mr-2">
           <Sliders className="w-3.5 h-3.5 text-cyan-400" />
           Interactive Demo Actions:
