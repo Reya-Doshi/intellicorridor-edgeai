@@ -51,7 +51,7 @@ export function Header({
               </span>
             </h1>
             <p className="brand-subtitle">
-              Predictive Traffic Decision Intelligence for Smart Transportation Corridors
+              Edge AI Traffic Simulation Sandbox & Digital Twin for Smart Transportation Corridors
             </p>
           </div>
         </div>
