@@ -51,14 +51,20 @@ def detect_cars(video_file):
     starting_time = time.time()
     frame_counter = 0
 
-    # Headless mode for web API execution (no desktop window popups)
-    show_gui = False
+    # Enable local OpenCV desktop window display if requested or running locally
+    show_gui = os.environ.get('SHOW_OPENCV_GUI', 'true').lower() == 'true'
+    if show_gui:
+        try:
+            cv.namedWindow('IntelliCorridor YOLOv9 Edge Vision Scanning', cv.WINDOW_NORMAL)
+            cv.resizeWindow('IntelliCorridor YOLOv9 Edge Vision Scanning', 800, 500)
+        except Exception:
+            show_gui = False
 
     # To keep track of car counts and timestamps
     car_counts = deque()  # Store (timestamp, car_count) tuples
 
-    # Detection stride (process every 2nd frame on CPU for smooth real-time throughput)
-    stride = 2
+    # Detection stride (process every frame when scanning for accuracy)
+    stride = 1
     last_detected_count = 0
 
     while True:
@@ -106,8 +112,27 @@ def detect_cars(video_file):
         else:
             mean_peak_value = 0
 
-    # Release the video capture
+        # Optional live desktop GUI frame rendering
+        if show_gui:
+            try:
+                # Add FPS & Scanning telemetry onto frame
+                ending_time = time.time()
+                fps = frame_counter / max(0.001, (ending_time - starting_time))
+                cv.putText(frame, f'YOLOv9 FPS: {fps:.1f} | Cars: {car_count}', (20, 40), 
+                           cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+                cv.imshow('IntelliCorridor YOLOv9 Edge Vision Scanning', frame)
+                if cv.waitKey(1) & 0xFF == ord('q'):
+                    break
+            except Exception:
+                show_gui = False
+
+    # Release the video capture & destroy OpenCV windows
     cap.release()
+    if show_gui:
+        try:
+            cv.destroyAllWindows()
+        except Exception:
+            pass
 
     # Return the mean of the peak values
     return mean_peak_value
