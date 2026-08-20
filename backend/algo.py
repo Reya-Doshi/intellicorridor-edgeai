@@ -108,7 +108,21 @@ def genetic_algorithm(pop_size, num_lights, max_iter, green_min, green_max, cycl
     
     return best_sol, best_delays
 
-def optimize_traffic(cars):
+def optimize_traffic(cars, emergency_approach=None):
+    """
+    Computes Webster delay minimized green splits, with instant priority preemption for emergency vehicles.
+    emergency_approach: Optional[str] -> 'north', 'south', 'west', or 'east'
+    """
+    if emergency_approach and emergency_approach.lower() in ['north', 'south', 'west', 'east']:
+        target = emergency_approach.lower()
+        print(f"[EMERGENCY PREEMPTION OVERRIDE] Ambulance / Fire Truck detected on {target.upper()} approach!", flush=True)
+        splits = {'north': 10, 'south': 10, 'west': 10, 'east': 10}
+        splits[target] = 60 # Priority max green wave for emergency vehicle
+        splits['totalDelay'] = 12.0
+        splits['emergencyPreemptionActive'] = True
+        splits['preemptionApproach'] = target.upper()
+        return splits
+
     # Default parameters
     pop_size = 400
     num_lights = 4
@@ -128,7 +142,9 @@ def optimize_traffic(cars):
         'north': int(best_sol[0][0]),
         'south': int(best_sol[0][1]),
         'west': int(best_sol[0][2]),
-        'east': int(best_sol[0][3])
+        'east': int(best_sol[0][3]),
+        'totalDelay': round(float(best_sol[1]), 1),
+        'emergencyPreemptionActive': False
     }
 
     print('Optimal Solution:')

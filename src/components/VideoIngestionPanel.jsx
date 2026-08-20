@@ -244,6 +244,41 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             <span>Connect Live RTSP Streams</span>
           </button>
 
+          <button
+            onClick={async () => {
+              setIsOptimizing(true);
+              try {
+                const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
+                const approachNames = ['north', 'south', 'west', 'east'];
+                const targetApproach = approachNames[activeVideoTab] || 'north';
+                const response = await fetch(`${backendUrl}/emergency`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ approach: targetApproach })
+                });
+                if (response.ok) {
+                  const data = await response.json();
+                  setGaResult({
+                    north: data.north,
+                    south: data.south,
+                    west: data.west,
+                    east: data.east,
+                    totalDelay: data.totalDelay,
+                    emergencyPreemptionActive: true,
+                    preemptionApproach: data.preemptionApproach || targetApproach.toUpperCase()
+                  });
+                }
+              } catch (e) {
+                console.warn('Emergency preemption note:', e);
+              }
+              setIsOptimizing(false);
+            }}
+            className="btn btn-ghost !text-xs text-rose-400 hover:text-rose-300 border border-rose-500/40 bg-rose-950/20"
+          >
+            <Flame className="w-3.5 h-3.5 animate-pulse text-rose-400" />
+            <span>Emergency Vehicle Priority Preemption</span>
+          </button>
+
           {selectedFiles.length > 0 ? (
             <span className="text-xs font-mono text-emerald-400">
               ✓ {selectedFiles.length} custom videos selected

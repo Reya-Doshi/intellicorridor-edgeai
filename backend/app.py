@@ -104,6 +104,15 @@ def rtsp_stream():
 
     return jsonify({'north': 42, 'south': 29, 'west': 34, 'east': 43, 'totalDelay': 118.4})
 
+@app.route('/emergency', methods=['POST'])
+def emergency_preemption():
+    """Triggers instant Emergency Priority Preemption for ambulances / fire trucks"""
+    data = request.get_json() or {}
+    approach = data.get('approach', 'north')
+    print(f"[ALERT] EMERGENCY VEHICLE PREEMPTION TRIGGERED FOR: {approach.upper()} CORRIDOR", flush=True)
+    result = optimize_traffic([0, 0, 0, 0], emergency_approach=approach)
+    return jsonify(result)
+
 @app.route('/', methods=['GET'])
 @app.route('/health', methods=['GET'])
 def health():
