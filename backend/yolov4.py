@@ -78,15 +78,17 @@ def detect_cars(video_file):
         if frame_counter % stride == 0 or frame_counter == 1:
             classes, scores, boxes = model.detect(frame, Conf_threshold, NMS_threshold)
 
-            # Count the number of cars detected
+            # Count and draw bounding boxes for all vehicle classes (car, bus, truck, motorbike, bicycle)
+            vehicle_classes = {"car", "bus", "truck", "motorbike", "bicycle"}
             car_count = 0
             for (classid, score, box) in zip(classes, scores, boxes):
-                if class_name[classid] == "car":
+                cname = class_name[int(classid)] if int(classid) < len(class_name) else "vehicle"
+                if cname in vehicle_classes:
                     car_count += 1
                     color = COLORS[int(classid) % len(COLORS)]
-                    label = f"{class_name[classid]} : {score:.2f}"
+                    label = f"{cname} : {score:.2f}"
                     cv.rectangle(frame, box, color, 2)
-                    cv.putText(frame, label, (box[0], box[1]-10), 
+                    cv.putText(frame, label, (box[0], max(15, box[1]-10)), 
                                cv.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
             last_detected_count = car_count
         else:
