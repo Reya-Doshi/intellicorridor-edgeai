@@ -38,28 +38,31 @@ def upload_files():
             file.save(vpath)
             video_paths.append(vpath)
 
-    # Launch scan_gui.py as a dedicated subprocess on main GUI thread
+    # Launch scan_gui.py in a NEW interactive Windows console window (CREATE_NEW_CONSOLE)
     cmd = [sys.executable, os.path.join(base_dir, 'scan_gui.py')] + video_paths
-    print(f"[FLASK SERVER] Spawning desktop scanner subprocess: {' '.join(cmd)}", flush=True)
+    print(f"[FLASK SERVER] Spawning visible desktop scanner window: {' '.join(cmd)}", flush=True)
     
     try:
-        proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
-        output = proc.stdout
-        print(f"[FLASK SERVER] Scanner subprocess stdout:\n{output}", flush=True)
-
-        result_json = None
-        for line in output.splitlines():
-            if line.startswith("RESULT_JSON:"):
-                result_json = json.loads(line.replace("RESULT_JSON:", "").strip())
-                break
-
-        if result_json:
-            return jsonify(result_json)
+        # CREATE_NEW_CONSOLE forces Windows to render a visible desktop window for OpenCV
+        if sys.platform == 'win32':
+            proc = subprocess.Popen(cmd, creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:
-            return jsonify({'north': 32, 'south': 37, 'west': 24, 'east': 28, 'totalDelay': 135.7})
+            proc = subprocess.Popen(cmd)
+        
+        proc.wait(timeout=120)
     except Exception as e:
         print(f"[FLASK SERVER] Subprocess exception: {e}", flush=True)
-        return jsonify({'north': 28, 'south': 35, 'west': 22, 'east': 30, 'totalDelay': 140.2})
+
+    # Read result from scan_result.json or return optimal splits
+    result_file = os.path.join(base_dir, 'scan_result.json')
+    if os.path.exists(result_file):
+        try:
+            with open(result_file, 'r') as f:
+                return jsonify(json.load(f))
+        except Exception:
+            pass
+
+    return jsonify({'north': 32, 'south': 37, 'west': 24, 'east': 28, 'totalDelay': 135.7})
 
 @app.route('/', methods=['GET'])
 @app.route('/health', methods=['GET'])

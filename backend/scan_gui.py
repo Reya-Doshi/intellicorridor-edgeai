@@ -30,4 +30,11 @@ if __name__ == '__main__':
             num_cars_list.append(18.5)
 
     result = optimize_traffic(num_cars_list)
+    result_file = os.path.join(base_dir, 'scan_result.json')
+    try:
+        with open(result_file, 'w') as f:
+            json.dump(result, f)
+    except Exception as e:
+        print(f"[SCANNER ERROR] Writing result file error: {e}", flush=True)
+
     print("RESULT_JSON:" + json.dumps(result), flush=True)
