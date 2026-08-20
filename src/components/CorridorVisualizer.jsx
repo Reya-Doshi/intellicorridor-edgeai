@@ -26,7 +26,7 @@ export function CorridorVisualizer({
   isFailoverActive
 }) {
   return (
-    <section className="corridor-container">
+    <section className="corridor-container mt-6 pt-6 border-t border-slate-800/80">
       <div className="corridor-header">
         <div className="flex items-center gap-2">
           <Navigation className="w-5 h-5 text-cyan-400" />

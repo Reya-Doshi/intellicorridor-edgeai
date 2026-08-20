@@ -198,7 +198,7 @@ export function Header({
         </button>
 
         {/* Auto Tick Live Stream Switch */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
           <label className="text-xs font-mono text-slate-300 flex items-center gap-2 cursor-pointer select-none bg-slate-900/80 px-3 py-1.5 rounded-md border border-slate-700/50">
             <input 
               type="checkbox" 
