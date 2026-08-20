@@ -80,18 +80,27 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
     }
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:5000';
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60s timeout for scanning
+      const timeoutId = setTimeout(() => controller.abort(), 60000);
 
-      const response = await fetch(`${backendUrl}/upload`, {
-        method: 'POST',
-        body: formData,
-        signal: controller.signal
-      });
+      let response;
+      try {
+        response = await fetch(`${backendUrl}/upload`, {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        });
+      } catch (e) {
+        response = await fetch('http://localhost:5000/upload', {
+          method: 'POST',
+          body: formData,
+          signal: controller.signal
+        });
+      }
       clearTimeout(timeoutId);
 
-      if (response.ok) {
+      if (response && response.ok) {
         const data = await response.json();
         setGaResult({
           north: data.north || 28,
