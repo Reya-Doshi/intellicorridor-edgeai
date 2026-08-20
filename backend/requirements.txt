@@ -1,6 +1,6 @@
 flask
 flask-cors
-opencv-python-headless
+opencv-python==4.10.0.84
 numpy
 scipy
 matplotlib

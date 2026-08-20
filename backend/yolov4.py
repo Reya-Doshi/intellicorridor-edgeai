@@ -51,14 +51,14 @@ def detect_cars(video_file):
     starting_time = time.time()
     frame_counter = 0
 
-    # Create a named window and set it to full screen (if display available)
-    show_gui = False
+    # Create a named desktop window for vehicle scanning
+    show_gui = True
+    window_title = 'IntelliCorridor YOLOv9 Edge Vision Scanning'
     try:
-        cv.namedWindow('frame', cv.WINDOW_NORMAL)
-        cv.setWindowProperty('frame', cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
-        show_gui = True
-    except Exception:
-        show_gui = False
+        cv.namedWindow(window_title, cv.WINDOW_NORMAL)
+        cv.resizeWindow(window_title, 960, 540)
+    except Exception as e:
+        print(f"[NOTICE] Window creation notice: {e}")
 
     # To keep track of car counts and timestamps
     car_counts = deque()  # Store (timestamp, car_count) tuples
@@ -78,7 +78,7 @@ def detect_cars(video_file):
         if frame_counter % stride == 0 or frame_counter == 1:
             classes, scores, boxes = model.detect(frame, Conf_threshold, NMS_threshold)
 
-            # Count the number of cars detected
+            # Count the number of vehicles detected (car, bus, truck, motorbike)
             car_count = 0
             for (classid, score, box) in zip(classes, scores, boxes):
                 if class_name[classid] in ["car", "bus", "truck", "motorbike"]:
@@ -112,33 +112,31 @@ def detect_cars(video_file):
         else:
             mean_peak_value = 0
 
-        # Calculate and display FPS
+        # Calculate and display FPS & Telemetry
         ending_time = time.time()
         fps = frame_counter / max(0.001, (ending_time - starting_time))
-        cv.putText(frame, f'FPS: {fps:.2f}', (20, 50), 
+        cv.putText(frame, f'FPS: {fps:.2f}', (20, 40), 
                    cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-        
-        # Display the mean peak value on the frame
-        cv.putText(frame, f'Mean Peak Cars : {mean_peak_value:.2f}', (20, 80), 
+        cv.putText(frame, f'Vehicles Scanned : {car_count}', (20, 70), 
                    cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 255), 2)
 
-        # Display the frame if GUI is available
+        # Display the frame on desktop
         if show_gui:
             try:
-                cv.imshow('frame', frame)
+                cv.imshow(window_title, frame)
                 key = cv.waitKey(1)
                 if key == ord('q'):
                     break
-            except Exception:
-                pass
+            except Exception as e:
+                print(f"[NOTICE] GUI frame render note: {e}")
 
-    # Release the video capture and close windows
+    # Release video capture and close window
     cap.release()
-    try:
-        if show_gui:
-            cv.destroyAllWindows()
-    except Exception:
-        pass
+    if show_gui:
+        try:
+            cv.destroyWindow(window_title)
+        except Exception:
+            pass
 
     # Return the mean of the peak values
     return mean_peak_value
