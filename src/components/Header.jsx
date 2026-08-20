@@ -197,21 +197,16 @@ export function Header({
           Reset
         </button>
 
-        {/* Auto Tick Live Stream Switch */}
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-mono text-slate-300 flex items-center gap-2 cursor-pointer select-none bg-slate-900/80 px-3 py-1.5 rounded-md border border-slate-700/50">
-            <input 
-              type="checkbox" 
-              checked={autoTickEnabled} 
-              onChange={(e) => setAutoTickEnabled(e.target.checked)}
-              className="accent-cyan-500 cursor-pointer"
-            />
-            <span className="flex items-center gap-1.5">
-              <span className={`w-2 h-2 rounded-full ${autoTickEnabled ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`}></span>
-              Live Dynamic Pulse
-            </span>
-          </label>
-        </div>
+        {/* Auto Tick Live Stream Button Pill Toggle */}
+        <button 
+          type="button"
+          onClick={() => setAutoTickEnabled(!autoTickEnabled)}
+          className={`btn ${autoTickEnabled ? 'btn-ghost !border-emerald-500/50 !text-emerald-300 bg-emerald-950/30 shadow-[0_0_12px_rgba(16,185,129,0.25)]' : 'btn-ghost text-slate-400'}`}
+          title="Toggle live automated traffic simulation pulse"
+        >
+          <span className={`w-2 h-2 rounded-full ${autoTickEnabled ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`}></span>
+          <span>Live Dynamic Pulse</span>
+        </button>
       </div>
     </header>
   );

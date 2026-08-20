@@ -27,7 +27,7 @@ export function CorridorVisualizer({
 }) {
   return (
     <section className="corridor-container mt-6 pt-6 border-t border-slate-800/80">
-      <div className="corridor-header">
+      <div className="corridor-header mb-6">
         <div className="flex items-center gap-2">
           <Navigation className="w-5 h-5 text-cyan-400" />
           <h2 className="font-['Chakra_Petch'] text-lg font-bold uppercase tracking-wider text-white">
