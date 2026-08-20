@@ -29,187 +29,201 @@ export function CorridorFlowCanvas({
     let waveOffset = 0;
 
     const render = () => {
-      const width = canvas.width = canvas.offsetWidth;
-      const height = canvas.height = canvas.offsetHeight;
+      try {
+        if (!canvasRef.current) return;
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
 
-      ctx.clearRect(0, 0, width, height);
+        const width = canvas.width = canvas.offsetWidth || 800;
+        const height = canvas.height = canvas.offsetHeight || 120;
 
-      // Node Positions (4 Intersections proportionally positioned across width)
-      const nodes = [
-        { x: width * 0.12, int: intersections[0] },
-        { x: width * 0.38, int: intersections[1] },
-        { x: width * 0.64, int: intersections[2] },
-        { x: width * 0.90, int: intersections[3] }
-      ];
+        ctx.clearRect(0, 0, width, height);
 
-      const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+        // Node Positions (4 Intersections proportionally positioned across width)
+        const nodes = [
+          { x: width * 0.12, int: intersections[0] },
+          { x: width * 0.38, int: intersections[1] },
+          { x: width * 0.64, int: intersections[2] },
+          { x: width * 0.90, int: intersections[3] }
+        ];
 
-      const roadY = height * 0.52;
-      const roadHeight = 38;
+        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
 
-      // 1. Draw Highway Asphalt Base
-      const roadGrad = ctx.createLinearGradient(0, roadY - roadHeight/2, 0, roadY + roadHeight/2);
-      if (isLight) {
-        roadGrad.addColorStop(0, '#334155');
-        roadGrad.addColorStop(0.5, '#1e293b');
-        roadGrad.addColorStop(1, '#334155');
-      } else {
-        roadGrad.addColorStop(0, '#0f172a');
-        roadGrad.addColorStop(0.5, '#1e293b');
-        roadGrad.addColorStop(1, '#0f172a');
-      }
-      ctx.fillStyle = roadGrad;
-      ctx.fillRect(0, roadY - roadHeight/2, width, roadHeight);
+        const roadY = height * 0.52;
+        const roadHeight = 38;
 
-      // Highway Borders
-      ctx.strokeStyle = isLight ? '#94a3b8' : '#334155';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.moveTo(0, roadY - roadHeight/2);
-      ctx.lineTo(width, roadY - roadHeight/2);
-      ctx.moveTo(0, roadY + roadHeight/2);
-      ctx.lineTo(width, roadY + roadHeight/2);
-      ctx.stroke();
-
-      // Dashed Center Divider
-      ctx.setLineDash([8, 8]);
-      ctx.strokeStyle = '#64748b';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
-      ctx.moveTo(0, roadY);
-      ctx.lineTo(width, roadY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // 2. Draw Green Wave Coordinated Band (if active)
-      if (simState.recommendationApplied && !isEmergencyActive) {
-        waveOffset = (waveOffset + 2.5) % width;
-        const waveGrad = ctx.createLinearGradient(waveOffset - 120, 0, waveOffset + 120, 0);
-        waveGrad.addColorStop(0, 'rgba(16, 185, 129, 0)');
-        waveGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.35)');
-        waveGrad.addColorStop(1, 'rgba(16, 185, 129, 0)');
-        ctx.fillStyle = waveGrad;
-        ctx.fillRect(0, roadY - roadHeight/2, width, roadHeight);
-      }
-
-      // 3. Draw V2X Inter-Node Communication Data Links
-      ctx.strokeStyle = isEmergencyActive 
-        ? 'rgba(244, 63, 94, 0.4)' 
-        : simState.recommendationApplied 
-        ? 'rgba(16, 185, 129, 0.4)' 
-        : 'rgba(56, 189, 248, 0.3)';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 4]);
-      ctx.beginPath();
-      ctx.moveTo(nodes[0].x, roadY - 26);
-      ctx.lineTo(nodes[3].x, roadY - 26);
-      ctx.stroke();
-      ctx.setLineDash([]);
-
-      // 4. Update & Draw Moving Vehicles
-      vehicles.forEach(v => {
-        // Target light status for the next intersection ahead
-        let targetNode = nodes.find(n => n.x > v.x);
-        let shouldStop = false;
-
-        if (targetNode && !isEmergencyActive) {
-          const distToNode = targetNode.x - v.x;
-          const isRed = targetNode.int?.light === 'red';
-          const isYellow = targetNode.int?.light === 'yellow';
-
-          // Slow down or queue up if approaching red light
-          if ((isRed || isYellow) && distToNode > 10 && distToNode < 70) {
-            shouldStop = true;
-          }
-        }
-
-        // Adjust speed
-        if (shouldStop) {
-          v.speed = Math.max(0.2, v.speed * 0.92);
-        } else if (isEmergencyActive) {
-          v.speed = Math.min(4.5, v.speed + 0.1);
-        } else if (simState.recommendationApplied) {
-          v.speed = Math.min(2.8, v.speed + 0.05);
+        // 1. Draw Highway Asphalt Base
+        const roadGrad = ctx.createLinearGradient(0, roadY - roadHeight/2, 0, roadY + roadHeight/2);
+        if (isLight) {
+          roadGrad.addColorStop(0, '#334155');
+          roadGrad.addColorStop(0.5, '#1e293b');
+          roadGrad.addColorStop(1, '#334155');
         } else {
-          v.speed = Math.min(1.8, v.speed + 0.04);
+          roadGrad.addColorStop(0, '#0f172a');
+          roadGrad.addColorStop(0.5, '#1e293b');
+          roadGrad.addColorStop(1, '#0f172a');
         }
+        ctx.fillStyle = roadGrad;
+        ctx.fillRect(0, roadY - roadHeight/2, width, roadHeight);
 
-        // Move vehicle
-        v.x += v.speed;
-        if (v.x > width + 20) {
-          v.x = -20;
-          v.lane = Math.random() > 0.5 ? 1 : 0;
-        }
-
-        // Vehicle Canvas Position
-        const laneY = (v.lane === 0) ? roadY - 9 : roadY + 9;
-
-        // Draw vehicle body
-        ctx.fillStyle = v.color;
-        ctx.shadowColor = v.color;
-        ctx.shadowBlur = 4;
+        // Highway Borders
+        ctx.strokeStyle = isLight ? '#94a3b8' : '#334155';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.roundRect(v.x - v.length/2, laneY - 4, v.length, 8, 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
-
-        // Headlight glow
-        ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
-        ctx.beginPath();
-        ctx.arc(v.x + v.length/2 + 2, laneY, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      // 5. Draw Intersection Stop-Lines & Junction Markers
-      nodes.forEach((node, idx) => {
-        const int = node.int;
-        if (!int) return;
-
-        const isRed = int.light === 'red';
-        const isYellow = int.light === 'yellow';
-        const isGreen = int.light === 'green';
-        const lightColor = isRed ? '#f43f5e' : isYellow ? '#f59e0b' : '#10b981';
-
-        // Vertical Cross-Street Strip
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(node.x - 12, roadY - roadHeight/2 - 10, 24, roadHeight + 20);
-
-        // Stop Bar
-        ctx.strokeStyle = lightColor;
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.moveTo(node.x - 12, roadY - roadHeight/2);
-        ctx.lineTo(node.x - 12, roadY + roadHeight/2);
+        ctx.moveTo(0, roadY - roadHeight/2);
+        ctx.lineTo(width, roadY - roadHeight/2);
+        ctx.moveTo(0, roadY + roadHeight/2);
+        ctx.lineTo(width, roadY + roadHeight/2);
         ctx.stroke();
 
-        // Node Glow Ring
-        ctx.fillStyle = lightColor;
-        ctx.shadowColor = lightColor;
-        ctx.shadowBlur = 8;
+        // Dashed Center Divider
+        ctx.setLineDash([8, 8]);
+        ctx.strokeStyle = '#64748b';
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(node.x, roadY - 26, 4, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.shadowBlur = 0;
+        ctx.moveTo(0, roadY);
+        ctx.lineTo(width, roadY);
+        ctx.stroke();
+        ctx.setLineDash([]);
 
-        // Node Label
-        ctx.font = '10px "JetBrains Mono", monospace';
-        ctx.fillStyle = '#94a3b8';
+        // 2. Draw Green Wave Coordinated Band (if active)
+        if (simState && simState.recommendationApplied && !isEmergencyActive) {
+          waveOffset = (waveOffset + 2.5) % width;
+          const waveGrad = ctx.createLinearGradient(waveOffset - 120, 0, waveOffset + 120, 0);
+          waveGrad.addColorStop(0, 'rgba(16, 185, 129, 0)');
+          waveGrad.addColorStop(0.5, 'rgba(16, 185, 129, 0.35)');
+          waveGrad.addColorStop(1, 'rgba(16, 185, 129, 0)');
+          ctx.fillStyle = waveGrad;
+          ctx.fillRect(0, roadY - roadHeight/2, width, roadHeight);
+        }
+
+        // 3. Draw V2X Inter-Node Communication Data Links
+        ctx.strokeStyle = isEmergencyActive 
+          ? 'rgba(244, 63, 94, 0.4)' 
+          : (simState && simState.recommendationApplied)
+          ? 'rgba(16, 185, 129, 0.4)' 
+          : 'rgba(56, 189, 248, 0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath();
+        ctx.moveTo(nodes[0].x, roadY - 26);
+        ctx.lineTo(nodes[3].x, roadY - 26);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // 4. Update & Draw Moving Vehicles
+        if (vehicles && Array.isArray(vehicles)) {
+          vehicles.forEach(v => {
+            // Target light status for the next intersection ahead
+            let targetNode = nodes.find(n => n.x > v.x);
+            let shouldStop = false;
+
+            if (targetNode && !isEmergencyActive) {
+              const distToNode = targetNode.x - v.x;
+              const isRed = targetNode.int?.light === 'red';
+              const isYellow = targetNode.int?.light === 'yellow';
+
+              // Slow down or queue up if approaching red light
+              if ((isRed || isYellow) && distToNode > 10 && distToNode < 70) {
+                shouldStop = true;
+              }
+            }
+
+            // Adjust speed
+            if (shouldStop) {
+              v.speed = Math.max(0.2, v.speed * 0.92);
+            } else if (isEmergencyActive) {
+              v.speed = Math.min(4.5, v.speed + 0.1);
+            } else if (simState && simState.recommendationApplied) {
+              v.speed = Math.min(2.8, v.speed + 0.05);
+            } else {
+              v.speed = Math.min(1.8, v.speed + 0.04);
+            }
+
+            // Move vehicle
+            v.x += v.speed;
+            if (v.x > width + 20) {
+              v.x = -20;
+              v.lane = Math.random() > 0.5 ? 1 : 0;
+            }
+
+            // Vehicle Canvas Position
+            const laneY = (v.lane === 0) ? roadY - 9 : roadY + 9;
+
+            // Draw vehicle body
+            ctx.fillStyle = v.color || '#38bdf8';
+            ctx.shadowColor = v.color || '#38bdf8';
+            ctx.shadowBlur = 4;
+            ctx.beginPath();
+            if (typeof ctx.roundRect === 'function') {
+              ctx.roundRect(v.x - v.length/2, laneY - 4, v.length, 8, 2);
+            } else {
+              ctx.rect(v.x - v.length/2, laneY - 4, v.length, 8);
+            }
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Headlight glow
+            ctx.fillStyle = 'rgba(255, 255, 200, 0.7)';
+            ctx.beginPath();
+            ctx.arc(v.x + v.length/2 + 2, laneY, 1.8, 0, Math.PI * 2);
+            ctx.fill();
+          });
+        }
+
+        // 5. Draw Intersection Stop-Lines & Junction Markers
+        nodes.forEach((node, idx) => {
+          const int = node.int;
+          if (!int) return;
+
+          const isRed = int.light === 'red';
+          const isYellow = int.light === 'yellow';
+          const lightColor = isRed ? '#f43f5e' : isYellow ? '#f59e0b' : '#10b981';
+
+          // Vertical Cross-Street Strip
+          ctx.fillStyle = '#1e293b';
+          ctx.fillRect(node.x - 12, roadY - roadHeight/2 - 10, 24, roadHeight + 20);
+
+          // Stop Bar
+          ctx.strokeStyle = lightColor;
+          ctx.lineWidth = 3;
+          ctx.beginPath();
+          ctx.moveTo(node.x - 12, roadY - roadHeight/2);
+          ctx.lineTo(node.x - 12, roadY + roadHeight/2);
+          ctx.stroke();
+
+          // Node Glow Ring
+          ctx.fillStyle = lightColor;
+          ctx.shadowColor = lightColor;
+          ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.arc(node.x, roadY - 26, 4, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.shadowBlur = 0;
+
+          // Node Label
+          ctx.font = '10px "JetBrains Mono", monospace';
+          ctx.fillStyle = '#94a3b8';
+          ctx.textAlign = 'center';
+          ctx.fillText(int.code || '', node.x, roadY - 34);
+
+          // Signal Light State Tag
+          ctx.font = 'bold 9px "JetBrains Mono", monospace';
+          ctx.fillStyle = lightColor;
+          ctx.fillText(`${int.phaseTimeLeft || 0}s`, node.x, roadY + roadHeight/2 + 15);
+        });
+
+        // Distance segment labels
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#64748b';
         ctx.textAlign = 'center';
-        ctx.fillText(int.code, node.x, roadY - 34);
-
-        // Signal Light State Tag
-        ctx.font = 'bold 9px "JetBrains Mono", monospace';
-        ctx.fillStyle = lightColor;
-        ctx.fillText(`${int.phaseTimeLeft}s`, node.x, roadY + roadHeight/2 + 15);
-      });
-
-      // Distance segment labels
-      ctx.font = '9px "JetBrains Mono", monospace';
-      ctx.fillStyle = '#64748b';
-      ctx.textAlign = 'center';
-      ctx.fillText('450m Arterial', (nodes[0].x + nodes[1].x) / 2, roadY + 28);
-      ctx.fillText('520m Bottleneck', (nodes[1].x + nodes[2].x) / 2, roadY + 28);
-      ctx.fillText('480m Expressway', (nodes[2].x + nodes[3].x) / 2, roadY + 28);
+        ctx.fillText('450m Arterial', (nodes[0].x + nodes[1].x) / 2, roadY + 28);
+        ctx.fillText('520m Bottleneck', (nodes[1].x + nodes[2].x) / 2, roadY + 28);
+        ctx.fillText('480m Expressway', (nodes[2].x + nodes[3].x) / 2, roadY + 28);
+      } catch (err) {
+        console.warn('Canvas frame render error:', err);
+      }
 
       animationFrameId = requestAnimationFrame(render);
     };
