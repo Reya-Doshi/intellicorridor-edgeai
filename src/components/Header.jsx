@@ -111,102 +111,104 @@ export function Header({
         </div>
       </div>
 
-      {/* Interactive Action Controls Bar (Uniform Grid Alignment) */}
-      <div className="action-bar flex flex-wrap items-center gap-2 sm:gap-2.5 pt-3 border-t border-slate-800/80">
-        <span className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5 mr-2 shrink-0">
+      {/* Interactive Action Controls Bar (Symmetrical 8-Column Grid Layout) */}
+      <div className="action-bar flex flex-col gap-2.5 pt-3 border-t border-slate-800/80">
+        <div className="text-xs font-mono text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
           <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-          Interactive Demo Actions:
-        </span>
+          <span>Interactive Demo Actions Controller:</span>
+        </div>
 
-        {/* Action 1: Simulate Traffic Increase */}
-        <button 
-          id="btn-simulate-traffic"
-          className="btn btn-amber flex-1 min-w-[140px] justify-center"
-          onClick={onSimulateTrafficIncrease}
-          disabled={isProcessing}
-        >
-          <AlertTriangle className="w-4 h-4 shrink-0" />
-          <span>Simulate Traffic Surge</span>
-        </button>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 w-full">
+          {/* Action 1: Simulate Traffic Surge */}
+          <button 
+            id="btn-simulate-traffic"
+            className="btn btn-amber justify-center h-9"
+            onClick={onSimulateTrafficIncrease}
+            disabled={isProcessing}
+          >
+            <AlertTriangle className="w-4 h-4 shrink-0" />
+            <span className="truncate">Surge</span>
+          </button>
 
-        {/* Action 2: Run Prediction */}
-        <button 
-          id="btn-run-prediction"
-          className="btn btn-cyan flex-1 min-w-[140px] justify-center"
-          onClick={onRunPrediction}
-          disabled={isProcessing}
-        >
-          <Zap className="w-4 h-4 shrink-0" />
-          <span>5-Min LSTM Prediction</span>
-        </button>
+          {/* Action 2: 5-Min Prediction */}
+          <button 
+            id="btn-run-prediction"
+            className="btn btn-cyan justify-center h-9"
+            onClick={onRunPrediction}
+            disabled={isProcessing}
+          >
+            <Zap className="w-4 h-4 shrink-0" />
+            <span className="truncate">Prediction</span>
+          </button>
 
-        {/* Action 3: Run Digital Twin */}
-        <button 
-          id="btn-run-digital-twin"
-          className="btn btn-purple flex-1 min-w-[140px] justify-center"
-          onClick={onRunDigitalTwin}
-          disabled={isProcessing}
-        >
-          <Cpu className="w-4 h-4 shrink-0" />
-          <span>Run Digital Twin</span>
-        </button>
+          {/* Action 3: Run Digital Twin */}
+          <button 
+            id="btn-run-digital-twin"
+            className="btn btn-purple justify-center h-9"
+            onClick={onRunDigitalTwin}
+            disabled={isProcessing}
+          >
+            <Cpu className="w-4 h-4 shrink-0" />
+            <span className="truncate">Digital Twin</span>
+          </button>
 
-        {/* Action 4: Apply Recommendation */}
-        <button 
-          id="btn-apply-recommendation"
-          className="btn btn-primary flex-1 min-w-[140px] justify-center"
-          onClick={onApplyRecommendation}
-          disabled={isProcessing}
-        >
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{simState.recommendationApplied ? 'Green Wave Synced' : 'Apply AI Recommendation'}</span>
-        </button>
+          {/* Action 4: Apply Recommendation */}
+          <button 
+            id="btn-apply-recommendation"
+            className="btn btn-primary justify-center h-9"
+            onClick={onApplyRecommendation}
+            disabled={isProcessing}
+          >
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span className="truncate">{simState.recommendationApplied ? 'Synced' : 'Apply AI'}</span>
+          </button>
 
-        {/* Action 5: Sensor Fault / Failover Mode Trigger */}
-        <button 
-          id="btn-toggle-failover"
-          className={`btn flex-1 min-w-[140px] justify-center ${isFailoverActive ? 'btn-amber !border-amber-400 text-amber-200 animate-pulse' : 'btn-ghost'}`}
-          onClick={onToggleFailover}
-          disabled={isProcessing}
-          title="Simulate camera sensor fault and edge failover policy"
-        >
-          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
-          <span>{isFailoverActive ? 'Failover Active' : 'Sensor Fault / Failover'}</span>
-        </button>
+          {/* Action 5: Sensor Fault / Failover */}
+          <button 
+            id="btn-toggle-failover"
+            className={`btn justify-center h-9 ${isFailoverActive ? 'btn-amber !border-amber-400 text-amber-200 animate-pulse' : 'btn-ghost'}`}
+            onClick={onToggleFailover}
+            disabled={isProcessing}
+            title="Simulate camera sensor fault and edge failover policy"
+          >
+            <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            <span className="truncate">{isFailoverActive ? 'Failover' : 'Failover'}</span>
+          </button>
 
-        {/* Action 6: Emergency Priority Preemption */}
-        <button 
-          id="btn-emergency-priority"
-          className={`btn flex-1 min-w-[140px] justify-center ${isEmergencyActive ? 'btn-amber animate-pulse' : 'btn-ghost'}`}
-          onClick={onTriggerEmergency}
-          disabled={isProcessing}
-          title="Preempt traffic signals for incoming ambulance / emergency vehicle"
-        >
-          <Siren className="w-4 h-4 text-rose-400 shrink-0" />
-          <span>{isEmergencyActive ? 'Emergency Active' : 'Emergency Priority'}</span>
-        </button>
+          {/* Action 6: Emergency Priority */}
+          <button 
+            id="btn-emergency-priority"
+            className={`btn justify-center h-9 ${isEmergencyActive ? 'btn-amber animate-pulse' : 'btn-ghost'}`}
+            onClick={onTriggerEmergency}
+            disabled={isProcessing}
+            title="Preempt traffic signals for incoming ambulance / emergency vehicle"
+          >
+            <Siren className="w-4 h-4 text-rose-400 shrink-0" />
+            <span className="truncate">{isEmergencyActive ? 'Emergency' : 'Emergency'}</span>
+          </button>
 
-        {/* Action 7: Reset Simulation */}
-        <button 
-          id="btn-reset-simulation"
-          className="btn btn-ghost flex-1 min-w-[100px] justify-center"
-          onClick={onResetSimulation}
-          disabled={isProcessing}
-        >
-          <RefreshCw className="w-4 h-4 shrink-0" />
-          <span>Reset</span>
-        </button>
+          {/* Action 7: Reset Simulation */}
+          <button 
+            id="btn-reset-simulation"
+            className="btn btn-ghost justify-center h-9"
+            onClick={onResetSimulation}
+            disabled={isProcessing}
+          >
+            <RefreshCw className="w-4 h-4 shrink-0" />
+            <span className="truncate">Reset</span>
+          </button>
 
-        {/* Action 8: Auto Tick Live Stream Button Pill Toggle */}
-        <button 
-          type="button"
-          onClick={() => setAutoTickEnabled(!autoTickEnabled)}
-          className={`btn flex-1 min-w-[150px] justify-center ${autoTickEnabled ? 'btn-ghost !border-emerald-500/50 !text-emerald-300 bg-emerald-950/30 shadow-[0_0_12px_rgba(16,185,129,0.25)]' : 'btn-ghost text-slate-400'}`}
-          title="Toggle live automated traffic simulation pulse"
-        >
-          <span className={`w-2 h-2 rounded-full shrink-0 ${autoTickEnabled ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`}></span>
-          <span>Live Dynamic Pulse</span>
-        </button>
+          {/* Action 8: Live Dynamic Pulse Button Pill Toggle */}
+          <button 
+            type="button"
+            onClick={() => setAutoTickEnabled(!autoTickEnabled)}
+            className={`btn justify-center h-9 ${autoTickEnabled ? 'btn-ghost !border-emerald-500/50 !text-emerald-300 bg-emerald-950/30 shadow-[0_0_12px_rgba(16,185,129,0.25)]' : 'btn-ghost text-slate-400'}`}
+            title="Toggle live automated traffic simulation pulse"
+          >
+            <span className={`w-2 h-2 rounded-full shrink-0 ${autoTickEnabled ? 'bg-emerald-400 animate-ping' : 'bg-slate-500'}`}></span>
+            <span className="truncate">Pulse</span>
+          </button>
+        </div>
       </div>
     </header>
   );
