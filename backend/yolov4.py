@@ -51,14 +51,8 @@ def detect_cars(video_file):
     starting_time = time.time()
     frame_counter = 0
 
-    # Create a named window and set it to full screen (if display available)
+    # Headless mode for web API execution (no desktop window popups)
     show_gui = False
-    try:
-        cv.namedWindow('frame', cv.WINDOW_NORMAL)
-        cv.setWindowProperty('frame', cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
-        show_gui = True
-    except Exception:
-        show_gui = False
 
     # To keep track of car counts and timestamps
     car_counts = deque()  # Store (timestamp, car_count) tuples
@@ -112,33 +106,8 @@ def detect_cars(video_file):
         else:
             mean_peak_value = 0
 
-        # Calculate and display FPS
-        ending_time = time.time()
-        fps = frame_counter / (ending_time - starting_time)
-        cv.putText(frame, f'FPS: {fps:.2f}', (20, 50), 
-                   cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-        
-        # Display the mean peak value on the frame
-        cv.putText(frame, f'Mean Peak Cars : {mean_peak_value:.2f}', (20, 80), 
-                   cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 255), 2)
-
-        # Display the frame if GUI is available
-        if show_gui:
-            try:
-                cv.imshow('frame', frame)
-                key = cv.waitKey(1)
-                if key == ord('q'):
-                    break
-            except Exception:
-                pass
-
-    # Release the video capture and close windows
+    # Release the video capture
     cap.release()
-    try:
-        if show_gui:
-            cv.destroyAllWindows()
-    except Exception:
-        pass
 
     # Return the mean of the peak values
     return mean_peak_value

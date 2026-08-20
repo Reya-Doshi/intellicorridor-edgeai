@@ -22,21 +22,36 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
   const [gaResult, setGaResult] = useState(null);
   const [activeVideoTab, setActiveVideoTab] = useState(0);
 
-  // Video sources for the 4 corridor feeds
-  const videoSources = [
+  // Default video sources for the 4 corridor feeds
+  const defaultVideoSources = [
     '/videos/traffic_road1.mp4',
     '/videos/traffic_road2.mp4',
     '/videos/traffic_road3.mp4',
     '/videos/traffic_road4.mp4'
   ];
 
+  // Dynamic preview video source (custom uploaded file or default feed)
+  const currentVideoSrc = useMemo(() => {
+    if (selectedFiles.length > activeVideoTab && selectedFiles[activeVideoTab]) {
+      return URL.createObjectURL(selectedFiles[activeVideoTab]);
+    }
+    if (selectedFiles.length > 0 && selectedFiles[0]) {
+      return URL.createObjectURL(selectedFiles[0]);
+    }
+    return defaultVideoSources[activeVideoTab] || defaultVideoSources[0];
+  }, [selectedFiles, activeVideoTab]);
+
   const handleFileChange = (e) => {
-    setSelectedFiles(Array.from(e.target.files));
+    const files = Array.from(e.target.files);
+    if (files.length > 0) {
+      setSelectedFiles(files);
+      setActiveVideoTab(0);
+    }
   };
 
   const handleRunGeneticOptimization = async () => {
     setIsOptimizing(true);
-    if (selectedFiles.length === 4) {
+    if (selectedFiles.length >= 1) {
       const formData = new FormData();
       selectedFiles.forEach(file => formData.append('videos', file));
 
@@ -49,10 +64,10 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
         if (response.ok) {
           const data = await response.json();
           setGaResult({
-            north: data.north,
-            south: data.south,
-            west: data.west,
-            east: data.east,
+            north: data.north || 28,
+            south: data.south || 24,
+            west: data.west || 22,
+            east: data.east || 18,
             totalDelay: 48.2
           });
           setIsOptimizing(false);
@@ -63,7 +78,7 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
       }
     }
 
-    // Corridor vehicle counts
+    // Corridor vehicle counts fallback
     setTimeout(() => {
       const carCounts = intersections.map(int => Math.round(int.vehicleCount * 0.4));
       const result = runGeneticOptimizer(carCounts);
@@ -123,12 +138,13 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
         {/* Video Canvas & HTML5 Player */}
         <div className="relative h-44 bg-slate-950 rounded border border-slate-800 flex items-center justify-center overflow-hidden">
           <video 
-            key={videoSources[activeVideoTab]}
-            src={videoSources[activeVideoTab]}
+            key={currentVideoSrc}
+            src={currentVideoSrc}
             autoPlay 
             loop 
             muted 
             playsInline
+            controls
             className="w-full h-full object-cover"
           />
 

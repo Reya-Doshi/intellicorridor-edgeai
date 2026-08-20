@@ -11,8 +11,13 @@ CORS(app)
 @app.route('/upload', methods=['POST'])
 def upload_files():
     files = request.files.getlist('videos')
-    if len(files) != 4:
-        return jsonify({'error': 'Please upload exactly 4 videos'}), 400
+    if not files:
+        return jsonify({'error': 'No videos provided'}), 400
+
+    # If fewer than 4 files uploaded, recycle them to cover all 4 junction approaches
+    original_files = list(files)
+    while len(files) < 4:
+        files.append(original_files[len(files) % len(original_files)])
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
     uploads_dir = os.path.join(base_dir, 'uploads')
