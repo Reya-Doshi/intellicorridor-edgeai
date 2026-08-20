@@ -215,14 +215,14 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
         ))}
       </div>
 
-      {/* Active Camera Window Container with SVG Edge-Mesh Wireframe & Floating Ingestion Overlay */}
-      <div className="p-2.5 bg-black/90 rounded-xl border border-slate-800 mb-3 relative overflow-hidden shadow-2xl">
+      {/* Active Camera Window Container with Simulated Wireframe Standby Canvas & Overlay Pills */}
+      <div className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 mb-4 relative overflow-hidden shadow-2xl">
         
-        {/* Video Canvas & Animated Edge Wireframe Container (No Standard Controls Attribute) */}
+        {/* Video Canvas & Animated Intersection Wireframe Feed Box */}
         <div className="relative w-full aspect-video max-h-[320px] bg-slate-950 rounded-lg border border-purple-500/30 flex flex-col justify-between overflow-hidden group shadow-inner">
           
-          {/* Animated SVG Intersection Wireframe & Moving Vehicle Bounding Dots Background */}
-          <div className="absolute inset-0 pointer-events-none opacity-30 z-0 overflow-hidden">
+          {/* Animated SVG Intersection Wireframe & Moving Vehicle Bounding Dots Background (Never Empty Black Box) */}
+          <div className="absolute inset-0 pointer-events-none opacity-40 z-0 overflow-hidden bg-[radial-gradient(#0e7490_1px,transparent_1px)] [background-size:20px_20px]">
             <svg className="w-full h-full stroke-cyan-500/40 fill-none" strokeWidth="1">
               {/* Intersection Grid Lines */}
               <line x1="0" y1="35%" x2="100%" y2="35%" strokeDasharray="4 4" />
@@ -230,16 +230,23 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
               <line x1="35%" y1="0" x2="35%" y2="100%" strokeDasharray="4 4" />
               <line x1="65%" y1="0" x2="65%" y2="100%" strokeDasharray="4 4" />
 
-              {/* Moving Vehicle Bounding Dots */}
-              <circle cx="28%" cy="42%" r="4" className="fill-cyan-400 animate-ping" />
-              <circle cx="58%" cy="48%" r="5" className="fill-amber-400 animate-pulse" />
-              <circle cx="50%" cy="22%" r="4" className="fill-rose-400 animate-ping" />
-              <circle cx="18%" cy="60%" r="3" className="fill-purple-400 animate-pulse" />
+              {/* Moving Vehicle Bounding Dots & Scopes */}
+              <circle cx="28%" cy="42%" r="5" className="fill-cyan-400 animate-ping" />
+              <circle cx="58%" cy="48%" r="6" className="fill-amber-400 animate-pulse" />
+              <circle cx="50%" cy="22%" r="5" className="fill-rose-400 animate-ping" />
+              <circle cx="18%" cy="60%" r="4" className="fill-purple-400 animate-pulse" />
 
-              {/* Target Scope Reticles */}
-              <rect x="25%" y="38%" width="40" height="24" className="stroke-cyan-400 stroke-2" />
-              <rect x="54%" y="44%" width="50" height="30" className="stroke-amber-400 stroke-2" />
+              {/* Scope Target Reticles */}
+              <rect x="25%" y="38%" width="45" height="28" className="stroke-cyan-400 stroke-2" />
+              <rect x="54%" y="44%" width="55" height="32" className="stroke-amber-400 stroke-2" />
             </svg>
+
+            {/* Centered Standby Overlay Text */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span className="text-[11px] font-mono text-cyan-400/70 bg-slate-950/80 px-3 py-1 rounded-md border border-cyan-500/30 tracking-widest uppercase">
+                [SIMULATED 4-NODE INTERSECTION FEED — STANDBY]
+              </span>
+            </div>
           </div>
 
           <video 
@@ -249,7 +256,7 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover bg-black/40 relative z-0"
+            className="w-full h-full object-cover bg-transparent relative z-0"
           />
 
           {/* Animated Scanning Laser Beam Overlay */}
@@ -274,120 +281,92 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
               <div className="absolute -bottom-1 -left-1 w-2 h-2 border-b-2 border-l-2 border-amber-200"></div>
               <div className="absolute -bottom-1 -right-1 w-2 h-2 border-b-2 border-r-2 border-amber-200"></div>
             </div>
-
-            {/* Box 3: Truck Detection */}
-            <div className="absolute top-[14%] left-[48%] w-[18%] h-[24%] border-2 border-rose-400 bg-rose-500/10 rounded-sm transition-all duration-500"></div>
-
-            {/* Box 4: Bike Detection */}
-            <div className="absolute top-[52%] left-[10%] w-[14%] h-[22%] border-2 border-purple-400 bg-purple-500/10 rounded-sm transition-all duration-500"></div>
           </div>
 
-          {/* Floated Ingestion Stats Overlay Badge (Top-Right Corner Pill) */}
-          <div className="absolute top-2.5 right-2.5 pointer-events-none z-20">
-            <div className="bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-cyan-500/40 text-[10px] font-mono text-cyan-300 shadow-2xl flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+          {/* Top-Right Floated Ingestion Stats Overlay Badge */}
+          <div className="absolute top-3 right-3 pointer-events-none z-20">
+            <div className="bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-full border border-cyan-500/40 text-cyan-300 text-[11px] font-mono shadow-xl flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
               <span className="font-bold text-emerald-400">● 30.2 FPS (8.4ms)</span>
               <span className="text-slate-600">|</span>
               <span className="font-semibold text-slate-200">YOLOv9 ONNX</span>
             </div>
           </div>
 
-          {/* Ingestion Mode Tag (Bottom-Left Corner) */}
-          <div className="absolute bottom-2 left-2 pointer-events-none z-20">
-            <span className="bg-black/80 backdrop-blur px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 border border-slate-700">
+          {/* Bottom-Left Ingestion Mode Tag Overlay */}
+          <div className="absolute bottom-3 left-3 pointer-events-none z-20">
+            <div className="bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-md border border-slate-700 text-slate-300 text-[10px] font-mono shadow-md">
               INGESTION: {ingestionMode.toUpperCase()}
-            </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Custom UI Control Action Bar with Proper Typography & Spacing */}
-      <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
-        {/* Distinct Header Block Elements with Margin */}
-        <div className="border-b border-slate-800 pb-2">
-          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300 mb-1 flex items-center gap-1.5">
-            <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-            Stream & Ingestion Mode Controller
-          </h3>
-          <p className="text-[11px] font-sans text-slate-400 block mb-0">
-            Select Input Source / Emergency Priority
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-          {/* Custom Styled Upload File Control Button */}
-          <label className="p-2 rounded-lg border border-purple-500/50 hover:border-purple-400 bg-slate-950 text-purple-200 flex items-center justify-between cursor-pointer transition-all shadow-md group">
-            <div className="flex items-center gap-2">
-              <Upload className="w-4 h-4 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
-              <div className="text-left">
-                <div className="text-xs font-semibold text-purple-200">Upload Custom MP4s</div>
-                <div className="text-[10px] font-mono text-purple-300/80 truncate max-w-[120px]">
-                  {selectedFiles.length > 0 ? `✓ ${selectedFiles.length} files selected` : 'Select 4 video files'}
-                </div>
-              </div>
-            </div>
-            <input 
-              type="file" 
-              multiple 
-              accept="video/*" 
-              onChange={handleFileChange} 
-              className="hidden" 
-            />
-          </label>
-
-          {/* Connect Live RTSP Streams Control Pill */}
-          <button
-            onClick={handleConnectRTSP}
-            className={`p-2 rounded-lg border flex items-center gap-2 text-left transition-all ${
-              ingestionMode === 'rtsp'
-                ? 'bg-cyan-950/40 border-cyan-500 text-cyan-200'
-                : 'bg-slate-950 border-slate-800 text-cyan-400 hover:border-slate-700'
-            }`}
-          >
-            <Activity className="w-4 h-4 text-cyan-400 shrink-0" />
-            <div>
-              <div className="text-xs font-semibold text-cyan-300">Live RTSP Streams</div>
-              <div className="text-[10px] font-mono text-slate-400">Direct IP Cam Feeds</div>
-            </div>
-          </button>
-
-          {/* Emergency Priority Preemption Control Pill */}
-          <button
-            onClick={handleEmergencyPreemption}
-            className="p-2 rounded-lg border border-rose-500/40 bg-rose-950/30 text-rose-300 hover:border-rose-400 flex items-center gap-2 text-left transition-all group"
-          >
-            <Flame className="w-4 h-4 text-rose-400 shrink-0 animate-pulse group-hover:scale-110" />
-            <div>
-              <div className="text-xs font-semibold text-rose-300">Emergency Preemption</div>
-              <div className="text-[10px] font-mono text-rose-400/80">Ambulance / Fire Wave</div>
-            </div>
-          </button>
-
-          {/* Run GA Optimization Primary Gradient Button */}
-          <button 
-            id="btn-run-ga-optimizer"
-            onClick={handleRunGeneticOptimization}
-            disabled={isOptimizing || isProcessing}
-            className="btn btn-purple !py-2 !px-3 justify-center w-full shadow-lg"
-          >
-            {isOptimizing ? (
-              <>
-                <Sparkles className="w-4 h-4 animate-spin" />
-                <span className="text-xs">Running GA...</span>
-              </>
-            ) : (
-              <>
-                <Dna className="w-4 h-4" />
-                <span className="text-xs">Run GA Optimization</span>
-              </>
-            )}
-          </button>
+      {/* Stream & Ingestion Mode Controller Header Block */}
+      <div className="mt-4 mb-3 flex items-center gap-2">
+        <Sliders className="w-4 h-4 text-cyan-400 shrink-0" />
+        <div>
+          <h4 className="text-sm font-semibold text-slate-100 leading-tight">Stream & Ingestion Mode Controller</h4>
+          <p className="text-xs text-slate-400">Select Input Source / Emergency Priority</p>
         </div>
       </div>
 
+      {/* Dark Slate Ingestion Action Buttons (3-Column Grid + Full Width Purple GA Button) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-4">
+        {/* Custom File Upload */}
+        <label className="flex flex-col items-center justify-center p-3 bg-slate-900 border border-slate-700 rounded-lg cursor-pointer hover:border-cyan-500 transition-all text-slate-200 group shadow-md">
+          <Upload className="w-4 h-4 text-cyan-400 mb-1 group-hover:scale-110 transition-transform" />
+          <span className="text-xs font-medium">Upload Custom MP4s</span>
+          <span className="text-[10px] text-slate-500 mt-0.5">
+            {selectedFiles.length > 0 ? `✓ ${selectedFiles.length} files selected` : 'Select 4 video files'}
+          </span>
+          <input type="file" className="hidden" multiple accept="video/*" onChange={handleFileChange} />
+        </label>
+
+        {/* Live RTSP Streams */}
+        <button 
+          onClick={handleConnectRTSP}
+          className={`flex flex-col items-center justify-center p-3 bg-slate-900 border ${ingestionMode === 'rtsp' ? 'border-cyan-500 text-cyan-200' : 'border-slate-700 text-slate-200 hover:border-cyan-500'} rounded-lg transition-all shadow-md`}
+        >
+          <Activity className="w-4 h-4 text-cyan-400 mb-1" />
+          <span className="text-xs font-medium">Live RTSP Streams</span>
+          <span className="text-[10px] text-slate-500 mt-0.5">Direct IP Cam Feeds</span>
+        </button>
+
+        {/* Emergency Preemption */}
+        <button 
+          onClick={handleEmergencyPreemption}
+          className="flex flex-col items-center justify-center p-3 bg-red-950/40 border border-red-800/60 rounded-lg hover:bg-red-900/40 transition-all text-red-300 shadow-md group"
+        >
+          <Flame className="w-4 h-4 text-red-400 mb-1 animate-pulse group-hover:scale-110" />
+          <span className="text-xs font-medium">Emergency Preemption</span>
+          <span className="text-[10px] text-red-400/70 mt-0.5">Ambulance / Fire Wave</span>
+        </button>
+      </div>
+
+      {/* Run GA Optimization Primary Gradient Button */}
+      <button 
+        id="btn-run-ga-optimizer"
+        onClick={handleRunGeneticOptimization}
+        disabled={isOptimizing || isProcessing}
+        className="w-full btn btn-purple !py-3 justify-center shadow-lg"
+      >
+        {isOptimizing ? (
+          <>
+            <Sparkles className="w-4 h-4 animate-spin" />
+            <span className="text-sm font-semibold">Running Genetic Algorithm (25 Epochs)...</span>
+          </>
+        ) : (
+          <>
+            <Dna className="w-4 h-4" />
+            <span className="text-sm font-semibold">Run Genetic Algorithm Optimization</span>
+          </>
+        )}
+      </button>
+
       {/* Genetic Optimization Output Results */}
       {gaResult && (
-        <div className="mt-3 p-3 bg-purple-950/20 border border-purple-500/40 rounded-xl animate-in fade-in shadow-xl">
+        <div className="mt-4 p-3.5 bg-purple-950/20 border border-purple-500/40 rounded-xl animate-in fade-in shadow-xl">
           <div className="flex justify-between items-center mb-2">
             <span className="text-xs font-mono font-bold text-purple-300 uppercase flex items-center gap-1.5">
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
@@ -400,7 +379,7 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             </span>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 mb-2.5">
+          <div className="grid grid-cols-4 gap-2 mb-3">
             <div className={`p-2 rounded-lg border text-center ${gaResult.preemptionApproach === 'NORTH' ? 'bg-rose-950/60 border-rose-500 animate-pulse' : 'bg-slate-900/80 border-slate-800'}`}>
               <div className="text-[10px] font-mono text-slate-400">North Phase</div>
               <div className="font-mono text-sm font-bold text-emerald-400">{gaResult.north}s Green</div>
