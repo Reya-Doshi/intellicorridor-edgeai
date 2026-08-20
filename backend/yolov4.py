@@ -51,20 +51,20 @@ def detect_cars(video_file):
     starting_time = time.time()
     frame_counter = 0
 
-    # Enable local OpenCV desktop window display if requested or running locally
-    show_gui = os.environ.get('SHOW_OPENCV_GUI', 'true').lower() == 'true'
-    if show_gui:
-        try:
-            cv.namedWindow('IntelliCorridor YOLOv9 Edge Vision Scanning', cv.WINDOW_NORMAL)
-            cv.resizeWindow('IntelliCorridor YOLOv9 Edge Vision Scanning', 800, 500)
-        except Exception:
-            show_gui = False
+    # Create a named window and set it to full screen (if display available)
+    show_gui = False
+    try:
+        cv.namedWindow('frame', cv.WINDOW_NORMAL)
+        cv.setWindowProperty('frame', cv.WND_PROP_FULLSCREEN, cv.WINDOW_FULLSCREEN)
+        show_gui = True
+    except Exception:
+        show_gui = False
 
     # To keep track of car counts and timestamps
     car_counts = deque()  # Store (timestamp, car_count) tuples
 
-    # Detection stride (process every frame when scanning for accuracy)
-    stride = 1
+    # Detection stride (process every 2nd frame on CPU for smooth real-time throughput)
+    stride = 2
     last_detected_count = 0
 
     while True:
@@ -78,15 +78,13 @@ def detect_cars(video_file):
         if frame_counter % stride == 0 or frame_counter == 1:
             classes, scores, boxes = model.detect(frame, Conf_threshold, NMS_threshold)
 
-            # Count and draw bounding boxes for all vehicle classes (car, bus, truck, motorbike, bicycle)
-            vehicle_classes = {"car", "bus", "truck", "motorbike", "bicycle"}
+            # Count the number of cars detected
             car_count = 0
             for (classid, score, box) in zip(classes, scores, boxes):
-                cname = class_name[int(classid)] if int(classid) < len(class_name) else "vehicle"
-                if cname in vehicle_classes:
+                if class_name[classid] in ["car", "bus", "truck", "motorbike"]:
                     car_count += 1
                     color = COLORS[int(classid) % len(COLORS)]
-                    label = f"{cname} : {score:.2f}"
+                    label = f"{class_name[classid]} : {score:.2f}"
                     cv.rectangle(frame, box, color, 2)
                     cv.putText(frame, label, (box[0], max(15, box[1]-10)), 
                                cv.FONT_HERSHEY_COMPLEX, 0.5, color, 2)
@@ -114,32 +112,33 @@ def detect_cars(video_file):
         else:
             mean_peak_value = 0
 
-        # Live desktop GUI frame rendering with visible scanning rate
+        # Calculate and display FPS
+        ending_time = time.time()
+        fps = frame_counter / max(0.001, (ending_time - starting_time))
+        cv.putText(frame, f'FPS: {fps:.2f}', (20, 50), 
+                   cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
+        
+        # Display the mean peak value on the frame
+        cv.putText(frame, f'Mean Peak Cars : {mean_peak_value:.2f}', (20, 80), 
+                   cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 255), 2)
+
+        # Display the frame if GUI is available
         if show_gui:
             try:
-                # Add FPS & Scanning telemetry onto frame
-                ending_time = time.time()
-                fps = frame_counter / max(0.001, (ending_time - starting_time))
-                cv.putText(frame, f'YOLOv9 FPS: {fps:.1f} | Vehicles: {car_count}', (20, 40), 
-                           cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
-                cv.imshow('IntelliCorridor YOLOv9 Edge Vision Scanning', frame)
-                # 25ms delay per frame = ~30 FPS real-time visible scanning speed
-                if cv.waitKey(25) & 0xFF == ord('q'):
+                cv.imshow('frame', frame)
+                key = cv.waitKey(1)
+                if key == ord('q'):
                     break
             except Exception:
-                show_gui = False
+                pass
 
-    # Release the video capture & destroy OpenCV windows
+    # Release the video capture and close windows
     cap.release()
-    if show_gui:
-        try:
+    try:
+        if show_gui:
             cv.destroyAllWindows()
-        except Exception:
-            pass
+    except Exception:
+        pass
 
     # Return the mean of the peak values
     return mean_peak_value
-
-# Usage example:
-#mean_peak_value = detect_cars('output.avi')
-#print(f'Mean Peak Number of Cars Detected: {mean_peak_value}')
