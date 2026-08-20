@@ -215,29 +215,30 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
         ))}
       </div>
 
-      {/* Active Video Preview Player with SVG Edge-Mesh Stream Grid & Clean Overlay */}
+      {/* Active Camera Window Container with SVG Edge-Mesh Wireframe & Floating Ingestion Overlay */}
       <div className="p-2.5 bg-black/90 rounded-xl border border-slate-800 mb-3 relative overflow-hidden shadow-2xl">
-        <div className="flex justify-between items-center text-[11px] font-mono text-slate-400 mb-2 border-b border-slate-800 pb-1">
-          <span className="text-purple-300 flex items-center gap-1.5">
-            <Target className="w-3.5 h-3.5 text-cyan-400 animate-spin" style={{ animationDuration: '8s' }} />
-            [CAMERA FEED 0{activeVideoTab + 1}] {intersections[activeVideoTab]?.name}
-          </span>
-          <span className="text-emerald-400 font-bold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-            ● YOLOv9 EDGE INFERENCE ACTIVE (30.2 FPS)
-          </span>
-        </div>
-
-        {/* Video Canvas & HTML5 Player Container (No Standard Controls Attribute) */}
+        
+        {/* Video Canvas & Animated Edge Wireframe Container (No Standard Controls Attribute) */}
         <div className="relative w-full aspect-video max-h-[320px] bg-slate-950 rounded-lg border border-purple-500/30 flex flex-col justify-between overflow-hidden group shadow-inner">
           
-          {/* Simulated Edge-Mesh SVG Stream Grid Background (Ensures player is never an empty black box) */}
-          <div className="absolute inset-0 pointer-events-none opacity-20 bg-[radial-gradient(#22d3ee_1px,transparent_1px)] [background-size:16px_16px]">
-            <svg className="w-full h-full stroke-cyan-500/30" strokeWidth="0.5" fill="none">
-              <pattern id="grid-mesh" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" />
-              </pattern>
-              <rect width="100%" height="100%" fill="url(#grid-mesh)" />
+          {/* Animated SVG Intersection Wireframe & Moving Vehicle Bounding Dots Background */}
+          <div className="absolute inset-0 pointer-events-none opacity-30 z-0 overflow-hidden">
+            <svg className="w-full h-full stroke-cyan-500/40 fill-none" strokeWidth="1">
+              {/* Intersection Grid Lines */}
+              <line x1="0" y1="35%" x2="100%" y2="35%" strokeDasharray="4 4" />
+              <line x1="0" y1="65%" x2="100%" y2="65%" strokeDasharray="4 4" />
+              <line x1="35%" y1="0" x2="35%" y2="100%" strokeDasharray="4 4" />
+              <line x1="65%" y1="0" x2="65%" y2="100%" strokeDasharray="4 4" />
+
+              {/* Moving Vehicle Bounding Dots */}
+              <circle cx="28%" cy="42%" r="4" className="fill-cyan-400 animate-ping" />
+              <circle cx="58%" cy="48%" r="5" className="fill-amber-400 animate-pulse" />
+              <circle cx="50%" cy="22%" r="4" className="fill-rose-400 animate-ping" />
+              <circle cx="18%" cy="60%" r="3" className="fill-purple-400 animate-pulse" />
+
+              {/* Target Scope Reticles */}
+              <rect x="25%" y="38%" width="40" height="24" className="stroke-cyan-400 stroke-2" />
+              <rect x="54%" y="44%" width="50" height="30" className="stroke-amber-400 stroke-2" />
             </svg>
           </div>
 
@@ -248,7 +249,7 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover bg-black relative z-0"
+            className="w-full h-full object-cover bg-black/40 relative z-0"
           />
 
           {/* Animated Scanning Laser Beam Overlay */}
@@ -281,23 +282,13 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             <div className="absolute top-[52%] left-[10%] w-[14%] h-[22%] border-2 border-purple-400 bg-purple-500/10 rounded-sm transition-all duration-500"></div>
           </div>
 
-          {/* Consolidated Inference Metadata Overlay Badge (Top-Right Corner) */}
+          {/* Floated Ingestion Stats Overlay Badge (Top-Right Corner Pill) */}
           <div className="absolute top-2.5 right-2.5 pointer-events-none z-20">
-            <div className="bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-cyan-500/40 text-[10px] font-mono text-cyan-300 shadow-2xl flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                <span className="font-bold text-slate-200">YOLOv9 ONNX</span>
-              </div>
+            <div className="bg-black/85 backdrop-blur-md px-3 py-1.5 rounded-lg border border-cyan-500/40 text-[10px] font-mono text-cyan-300 shadow-2xl flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span className="font-bold text-emerald-400">● 30.2 FPS (8.4ms)</span>
               <span className="text-slate-600">|</span>
-              <span className="text-emerald-400 font-semibold">30.2 FPS (8.4ms)</span>
-              <span className="text-slate-600">|</span>
-              <span>CAR: 0.95</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-amber-300">BUS: 0.92</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-rose-300">TRUCK: 0.89</span>
-              <span className="text-slate-600">•</span>
-              <span className="text-purple-300">BIKE: 0.91</span>
+              <span className="font-semibold text-slate-200">YOLOv9 ONNX</span>
             </div>
           </div>
 
@@ -310,29 +301,28 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
         </div>
       </div>
 
-      {/* Cohesive Custom UI Control Action Bar */}
-      <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-2.5">
-        <div className="text-[11px] font-mono uppercase tracking-wider text-slate-400 flex items-center justify-between border-b border-slate-800 pb-1.5">
-          <span className="flex items-center gap-1.5 text-cyan-300 font-semibold">
+      {/* Custom UI Control Action Bar with Proper Typography & Spacing */}
+      <div className="p-3 bg-slate-900/80 rounded-xl border border-slate-800 space-y-3">
+        {/* Distinct Header Block Elements with Margin */}
+        <div className="border-b border-slate-800 pb-2">
+          <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-cyan-300 mb-1 flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-cyan-400" />
             Stream & Ingestion Mode Controller
-          </span>
-          <span className="text-[10px] text-slate-500">Select Input Source / Emergency Priority</span>
+          </h3>
+          <p className="text-[11px] font-sans text-slate-400 block mb-0">
+            Select Input Source / Emergency Priority
+          </p>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2">
-          {/* Custom File Upload Control Pill */}
-          <label className={`p-2 rounded-lg border flex items-center justify-between cursor-pointer transition-all ${
-            selectedFiles.length > 0
-              ? 'bg-emerald-950/30 border-emerald-500/50 text-emerald-300'
-              : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-700'
-          }`}>
+          {/* Custom Styled Upload File Control Button */}
+          <label className="p-2 rounded-lg border border-purple-500/50 hover:border-purple-400 bg-slate-950 text-purple-200 flex items-center justify-between cursor-pointer transition-all shadow-md group">
             <div className="flex items-center gap-2">
-              <Upload className="w-4 h-4 text-emerald-400 shrink-0" />
+              <Upload className="w-4 h-4 text-purple-400 shrink-0 group-hover:scale-110 transition-transform" />
               <div className="text-left">
-                <div className="text-xs font-semibold">Upload 4 Videos</div>
-                <div className="text-[10px] font-mono text-slate-400 truncate max-w-[120px]">
-                  {selectedFiles.length > 0 ? `✓ ${selectedFiles.length} files selected` : 'Custom MP4 files'}
+                <div className="text-xs font-semibold text-purple-200">Upload Custom MP4s</div>
+                <div className="text-[10px] font-mono text-purple-300/80 truncate max-w-[120px]">
+                  {selectedFiles.length > 0 ? `✓ ${selectedFiles.length} files selected` : 'Select 4 video files'}
                 </div>
               </div>
             </div>
