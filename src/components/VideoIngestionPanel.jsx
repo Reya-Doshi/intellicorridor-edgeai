@@ -163,8 +163,8 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
           <span className="text-emerald-400 font-bold">● YOLOv9 EDGE INFERENCE ACTIVE (30 FPS)</span>
         </div>
 
-        {/* Video Canvas & HTML5 Player */}
-        <div className="relative h-44 bg-slate-950 rounded border border-slate-800 flex items-center justify-center overflow-hidden">
+        {/* Video Canvas & HTML5 Player - Fixed Frame Container */}
+        <div className="relative w-full h-64 bg-black rounded-lg border border-slate-800 flex items-center justify-center overflow-hidden shadow-inner">
           <video 
             key={currentVideoSrc}
             src={currentVideoSrc}
@@ -173,7 +173,7 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             muted 
             playsInline
             controls
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain bg-black"
           />
 
           {/* Dynamic Bounding Box Overlays */}
