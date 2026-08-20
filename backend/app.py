@@ -6,6 +6,7 @@ import subprocess
 import json
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1000 * 1024 * 1024 # 1 GB max upload limit for 4K/HD videos
 CORS(app)
 
 @app.route('/upload', methods=['POST'])
