@@ -97,11 +97,11 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
       if (response && response.ok) {
         const data = await response.json();
         setGaResult({
-          north: data.north || 28,
-          south: data.south || 24,
-          west: data.west || 22,
-          east: data.east || 18,
-          totalDelay: 48.2
+          north: data.north,
+          south: data.south,
+          west: data.west,
+          east: data.east,
+          totalDelay: data.totalDelay || 135.7
         });
         success = true;
       }
