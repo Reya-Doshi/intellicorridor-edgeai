@@ -114,16 +114,17 @@ def detect_cars(video_file):
         else:
             mean_peak_value = 0
 
-        # Optional live desktop GUI frame rendering
+        # Live desktop GUI frame rendering with visible scanning rate
         if show_gui:
             try:
                 # Add FPS & Scanning telemetry onto frame
                 ending_time = time.time()
                 fps = frame_counter / max(0.001, (ending_time - starting_time))
-                cv.putText(frame, f'YOLOv9 FPS: {fps:.1f} | Cars: {car_count}', (20, 40), 
+                cv.putText(frame, f'YOLOv9 FPS: {fps:.1f} | Vehicles: {car_count}', (20, 40), 
                            cv.FONT_HERSHEY_COMPLEX, 0.7, (0, 255, 0), 2)
                 cv.imshow('IntelliCorridor YOLOv9 Edge Vision Scanning', frame)
-                if cv.waitKey(1) & 0xFF == ord('q'):
+                # 25ms delay per frame = ~30 FPS real-time visible scanning speed
+                if cv.waitKey(25) & 0xFF == ord('q'):
                     break
             except Exception:
                 show_gui = False

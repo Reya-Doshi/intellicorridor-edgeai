@@ -163,8 +163,8 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
           <span className="text-emerald-400 font-bold">● YOLOv9 EDGE INFERENCE ACTIVE (30 FPS)</span>
         </div>
 
-        {/* Video Canvas & HTML5 Player - Fixed Frame Container */}
-        <div className="relative w-full h-64 bg-black rounded-lg border border-slate-800 flex items-center justify-center overflow-hidden shadow-inner">
+        {/* Video Canvas & HTML5 Player - Fixed CCTV Monitor Container */}
+        <div className="relative w-full aspect-video max-h-[340px] bg-slate-950 rounded-xl border border-purple-500/30 flex flex-col justify-between overflow-hidden shadow-2xl group">
           <video 
             key={currentVideoSrc}
             src={currentVideoSrc}
@@ -176,22 +176,21 @@ export function VideoIngestionPanel({ intersections, onApplyGeneticOptimization,
             className="w-full h-full object-contain bg-black"
           />
 
-          {/* Dynamic Bounding Box Overlays */}
-          <div className="absolute top-3 left-8 border border-cyan-400 bg-cyan-500/20 px-1.5 py-0.5 text-[10px] font-mono text-cyan-300 rounded shadow">
-            Car: 0.95
-          </div>
-          <div className="absolute top-7 left-32 border border-amber-400 bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-mono text-amber-300 rounded shadow">
-            Bus: 0.92
-          </div>
-          <div className="absolute bottom-5 right-20 border border-rose-400 bg-rose-500/20 px-1.5 py-0.5 text-[10px] font-mono text-rose-300 rounded shadow">
-            Truck: 0.89
-          </div>
-          <div className="absolute bottom-9 left-20 border border-purple-400 bg-purple-500/20 px-1.5 py-0.5 text-[10px] font-mono text-purple-300 rounded shadow">
-            Bike: 0.91
-          </div>
-
-          <div className="absolute bottom-2 right-3 font-mono text-[10px] text-slate-300 bg-black/60 px-2 py-0.5 rounded border border-slate-700">
-            480x360 • YOLOv9 Tensor Forward Pass (8.4ms)
+          {/* Dynamic YOLO Classification Badges Overlay */}
+          <div className="absolute top-2 left-2 right-2 pointer-events-none flex flex-wrap items-center justify-between gap-1.5 z-10">
+            <div className="flex items-center gap-1.5 bg-black/75 backdrop-blur px-2 py-1 rounded-md border border-cyan-500/40 text-[10px] font-mono text-cyan-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
+              <span>Car: 0.95</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-amber-300">Bus: 0.92</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-rose-300">Truck: 0.89</span>
+              <span className="text-slate-500">•</span>
+              <span className="text-purple-300">Bike: 0.91</span>
+            </div>
+            <div className="bg-black/75 backdrop-blur font-mono text-[10px] text-slate-300 px-2 py-1 rounded-md border border-slate-700">
+              480x360 • YOLOv9 Forward Pass (8.4ms)
+            </div>
           </div>
         </div>
       </div>
